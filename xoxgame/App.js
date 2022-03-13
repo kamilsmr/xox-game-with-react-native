@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import React from 'react';
-import {Text, TouchableOpacity, Button} from 'react-native';
+import { Text, TouchableOpacity, Button } from 'react-native';
 import { VStack, HStack, Flex} from "react-native-flex-layout";
-
+import checkWinner from "./checkWinner";
 
 function Box({ value, onPress, disabled, highlighted}) {
   return (
@@ -22,7 +22,7 @@ function App() {
 
   const [currentPlayer, setCurrentPlayer] = useState("X");
 
-  const [BeforeUnloadEvent, setBoard] = useState(Array(9).fill(null));
+  const [board, setBoard] = useState(Array(9).fill(null));
 
   const [highlighted, setHighlighted] = useState([]);
 
@@ -32,11 +32,30 @@ function App() {
     const newBoard = [...board];
     newBoard[index] = currentPlayer;
     setBoard(newBoard);
-    setCurrentPlayer(prev => prev === "X" ? "0" : "X")
+
+    const winnerLine = checkWinner(newBoard)
+
+    if(winnerLine){
+      setHighlighted(winnerLine)
+      setWinner(currentPlayer)
+      alert(`${currentPlayer} won!`)
+    } else {
+      setCurrentPlayer(prev => prev === "X" ? "0" : "X")
+
+    };
+    
 
 
 
-  }
+  };
+
+  const handleReset = () => {
+    setCurrentPlayer("X");
+    setBoard(Array(9).fill(null));
+    setHighlighted([]);
+    setWinner(null);
+
+  };
 
   const getBox = (index) => (
     <Box 
@@ -68,7 +87,7 @@ function App() {
         {getBox(7)}
         {getBox(8)}
       </HStack>
-      <Button title="Reset" />
+      <Button title="Reset" onPress ={handleReset}/>
     </VStack>
   )
 }
